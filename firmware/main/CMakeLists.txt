@@ -176,6 +176,11 @@ if(DEFINED STACKCHAN_REPO_ROOT)
     list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "_x86[.]cpp")
     list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "/x86/")
     list(APPEND SOURCES ${STACKCHAN_APP_SOURCES})
+    # The integrated entry point is intentionally kept small; app-specific
+    # implementations live beside it in the repository and are compiled here.
+    file(GLOB STACKCHAN_INTEGRATED_APP_SOURCES
+        "${STACKCHAN_REPO_ROOT}/apps/device/integration/stackchan_official/apps/*.cpp")
+    list(APPEND SOURCES ${STACKCHAN_INTEGRATED_APP_SOURCES})
     list(APPEND INCLUDE_DIRS "${nlohmann_json_SOURCE_DIR}/single_include" "${STACKCHAN_REPO_ROOT}/apps/device" "${STACKCHAN_REPO_ROOT}/apps/device/app/common" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/main" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/gateway_chat/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/gateway_chat/src" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/robot_face/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/robot_motion/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/audio_output/include" "${STACKCHAN_REPO_ROOT}/apps/device/assembly/esp32/include" "${STACKCHAN_REPO_ROOT}/apps/device/service/include" "${STACKCHAN_REPO_ROOT}/apps/device/service/workflow/include" "${STACKCHAN_REPO_ROOT}/apps/device/port/in" "${STACKCHAN_REPO_ROOT}/apps/device/port/out" "${STACKCHAN_REPO_ROOT}/apps/device/utils/include" "${STACKCHAN_REPO_ROOT}/thirdparty/fmt/include" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/components/stackchan_hw/include")
 endif()
 
