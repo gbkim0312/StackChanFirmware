@@ -137,6 +137,7 @@ static void _head_touch_update_task(void* param)
         // Update and fire event
         gesture = recognizer.update(data);
         if (gesture != HeadPetGesture::None) {
+            mclog::tagInfo(_tag, "gesture detected: {}", static_cast<int>(gesture));
             GetHAL().onHeadPetGesture.emit(gesture);
         }
 

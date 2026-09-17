@@ -16,6 +16,7 @@ static std::string _tag = "Setup-AIAgent";
 
 namespace {
 static const std::array<const char*, 4> _idle_motion_level_labels = {{"Off", "Low", "Medium", "High"}};
+static const std::array<const char*, 3> _agent_profile_labels = {{"default", "professional", "jjanggu"}};
 
 }  // namespace
 
@@ -234,9 +235,33 @@ XiaozhiGeneralWorker::XiaozhiGeneralWorker()
         _switch_start_ai_on_boot->addState(LV_STATE_CHECKED);
     }
 
+    for (size_t i = 0; i < _agent_profile_labels.size(); ++i) {
+        if (_config.agentProfile == _agent_profile_labels[i]) {
+            _agent_profile_index = static_cast<int32_t>(i);
+            break;
+        }
+    }
+    _label_agent_profile_title = std::make_unique<Label>(_panel->get());
+    _label_agent_profile_title->setText("StackChan agent profile:");
+    _label_agent_profile_title->setTextFont(&lv_font_montserrat_16);
+    _label_agent_profile_title->setTextColor(lv_color_hex(0x26206A));
+    _label_agent_profile_title->setWidth(260);
+    _label_agent_profile_title->setTextAlign(LV_TEXT_ALIGN_CENTER);
+    _label_agent_profile_title->align(LV_ALIGN_TOP_MID, 0, 338);
+
+    _btn_agent_profile = std::make_unique<Button>(_panel->get());
+    apply_button_common_style(*_btn_agent_profile);
+    _btn_agent_profile->align(LV_ALIGN_TOP_MID, 0, 370);
+    _btn_agent_profile->setSize(290, 50);
+    _btn_agent_profile->label().setText(_agent_profile_labels[_agent_profile_index]);
+    _btn_agent_profile->onClick().connect([this]() {
+        _agent_profile_index = (_agent_profile_index + 1) % static_cast<int32_t>(_agent_profile_labels.size());
+        _btn_agent_profile->label().setText(_agent_profile_labels[_agent_profile_index]);
+    });
+
     _btn_confirm = std::make_unique<Button>(_panel->get());
     apply_button_common_style(*_btn_confirm);
-    _btn_confirm->align(LV_ALIGN_TOP_MID, 0, 326);
+    _btn_confirm->align(LV_ALIGN_TOP_MID, 0, 438);
     _btn_confirm->setSize(290, 50);
     _btn_confirm->label().setText("Confirm");
     _btn_confirm->onClick().connect([this]() { _confirm_flag = true; });
@@ -255,6 +280,7 @@ void XiaozhiGeneralWorker::update()
     if (_confirm_flag) {
         _confirm_flag = false;
         _config.startAiAgentOnBoot = _switch_start_ai_on_boot->getValue();
+        _config.agentProfile = _agent_profile_labels[_agent_profile_index];
         GetHAL().setXiaozhiConfig(_config);
         mclog::tagInfo(_tag, "xiaozhi config updated: idleRandomMovementLevel={} ({})", _config.idleRandomMovementLevel,
                        _idle_motion_level_labels[_config.idleRandomMovementLevel]);

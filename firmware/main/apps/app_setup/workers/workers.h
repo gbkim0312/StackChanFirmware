@@ -347,11 +347,14 @@ private:
     std::unique_ptr<uitk::lvgl_cpp::Slider> _slider_idle_motion;
     std::unique_ptr<uitk::lvgl_cpp::Label> _label_startup_title;
     std::unique_ptr<uitk::lvgl_cpp::Switch> _switch_start_ai_on_boot;
+    std::unique_ptr<uitk::lvgl_cpp::Label> _label_agent_profile_title;
+    std::unique_ptr<uitk::lvgl_cpp::Button> _btn_agent_profile;
     std::unique_ptr<uitk::lvgl_cpp::Button> _btn_confirm;
 
     XiaozhiConfig_t _config;
     std::vector<uint8_t> _idle_motion_levels;
     int32_t _pending_idle_motion_index = -1;
+    int32_t _agent_profile_index = 0;
     bool _confirm_flag                 = false;
 };
 

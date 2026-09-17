@@ -252,7 +252,10 @@ void StackChanAvatarDisplay::SetupUI()
     ESP_LOGI(TAG, "Creating Stack-chan Avatar...");
 
     auto avatar = std::make_unique<DefaultAvatar>();
-    avatar->init(lv_screen_active());
+    // Use the configured language font for the avatar speech bubble too.
+    // DefaultAvatar::init() otherwise falls back to Montserrat, which has no
+    // Hangul glyphs and renders Korean text as dots/ellipsis.
+    avatar->init(lv_screen_active(), &BUILTIN_TEXT_FONT);
     avatar->getPanel()->onClick().connect([]() {
         static uint32_t last_toggle_tick = 0;
         const uint32_t now               = GetHAL().millis();

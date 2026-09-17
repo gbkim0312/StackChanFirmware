@@ -119,6 +119,9 @@ struct XiaozhiConfig_t {
     bool allowShutdownWhenCharging   = false;
     uint8_t idleRandomMovementLevel  = 2;
     bool startAiAgentOnBoot          = false;
+    // StackChan application overrides persisted by the official SETUP UI.
+    std::string agentProfile         = "default";
+    std::string agentTransport       = "mqtt";
 };
 
 /**

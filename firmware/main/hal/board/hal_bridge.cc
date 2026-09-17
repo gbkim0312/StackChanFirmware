@@ -25,6 +25,8 @@ static constexpr std::string_view _xiaozhi_config_idle_shutdown_time_key        
 static constexpr std::string_view _xiaozhi_config_allow_shutdown_when_charging_key = "ext_pwr";
 static constexpr std::string_view _xiaozhi_config_idle_random_movement_key         = "idle_lv";
 static constexpr std::string_view _xiaozhi_config_start_ai_agent_on_boot_key       = "boot_ai";
+static constexpr std::string_view _xiaozhi_config_agent_profile_key                = "agent_profile";
+static constexpr std::string_view _xiaozhi_config_agent_transport_key              = "agent_transport";
 
 namespace hal_bridge {
 
@@ -87,6 +89,12 @@ lv_disp_t* display_get_lvgl_display()
     return display->GetLvglDisplay();
 }
 
+void display_setup_ui()
+{
+    auto display = static_cast<DISPLAY_TYPE*>(Board::GetInstance().GetDisplay());
+    display->SetupUI();
+}
+
 void disply_lvgl_lock()
 {
     auto display = static_cast<DISPLAY_TYPE*>(Board::GetInstance().GetDisplay());
@@ -132,6 +140,8 @@ XiaozhiConfig_t get_xiaozhi_config()
         settings.GetInt(_xiaozhi_config_idle_random_movement_key.data(), config.idleRandomMovementLevel);
     config.startAiAgentOnBoot =
         settings.GetBool(_xiaozhi_config_start_ai_agent_on_boot_key.data(), config.startAiAgentOnBoot);
+    config.agentProfile = settings.GetString(_xiaozhi_config_agent_profile_key.data(), config.agentProfile);
+    config.agentTransport = settings.GetString(_xiaozhi_config_agent_transport_key.data(), config.agentTransport);
 
     return config;
 }
@@ -143,6 +153,8 @@ void set_xiaozhi_config(const XiaozhiConfig_t& config)
     settings.SetBool(_xiaozhi_config_allow_shutdown_when_charging_key.data(), config.allowShutdownWhenCharging);
     settings.SetInt(_xiaozhi_config_idle_random_movement_key.data(), config.idleRandomMovementLevel);
     settings.SetBool(_xiaozhi_config_start_ai_agent_on_boot_key.data(), config.startAiAgentOnBoot);
+    settings.SetString(_xiaozhi_config_agent_profile_key.data(), config.agentProfile);
+    settings.SetString(_xiaozhi_config_agent_transport_key.data(), config.agentTransport);
 }
 
 void app_play_sound(const std::string_view& sound)

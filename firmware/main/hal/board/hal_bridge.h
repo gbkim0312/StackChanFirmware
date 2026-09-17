@@ -29,6 +29,8 @@ struct XiaozhiConfig_t {
     bool allowShutdownWhenCharging   = false;
     uint8_t idleRandomMovementLevel  = 2;
     bool startAiAgentOnBoot          = false;
+    std::string agentProfile         = "default";
+    std::string agentTransport       = "mqtt";
 };
 
 void lock();
@@ -45,6 +47,7 @@ void toggle_xiaozhi_chat_state();
 void disply_lvgl_lock();
 void disply_lvgl_unlock();
 lv_disp_t* display_get_lvgl_display();
+void display_setup_ui();
 
 void xiaozhi_board_init();
 void start_xiaozhi_app();

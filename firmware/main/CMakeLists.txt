@@ -1,6 +1,18 @@
 # Define xiaozhi source directory
 set(XIAOZHI_MAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../xiaozhi-esp32/main")
 
+if(DEFINED ENV{STACKCHAN_REPO_ROOT})
+    set(STACKCHAN_REPO_ROOT "$ENV{STACKCHAN_REPO_ROOT}")
+    if(NOT CMAKE_SCRIPT_MODE_FILE)
+        include(FetchContent)
+        FetchContent_Declare(nlohmann_json
+            GIT_REPOSITORY https://github.com/nlohmann/json.git
+            GIT_TAG v3.11.3
+            GIT_SHALLOW TRUE)
+        FetchContent_MakeAvailable(nlohmann_json)
+    endif()
+endif()
+
 file(GLOB_RECURSE STACK_CHAN_SOURCES
     "apps/*.c"
     "apps/*.cc"
@@ -18,7 +30,17 @@ file(GLOB_RECURSE STACK_CHAN_SOURCES
 set(STACK_CHAN_INCLUDE_DIRS 
     "."
 )
-list(APPEND STACK_CHAN_SOURCES main.cpp)
+if(DEFINED ENV{STACKCHAN_APP_MAIN})
+    set(STACKCHAN_APP_MAIN "$ENV{STACKCHAN_APP_MAIN}" CACHE FILEPATH
+        "Application entry point compiled into the StackChan firmware" FORCE)
+else()
+    set(STACKCHAN_APP_MAIN "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp" CACHE FILEPATH
+        "Application entry point compiled into the StackChan firmware")
+endif()
+if(NOT EXISTS "${STACKCHAN_APP_MAIN}")
+    message(FATAL_ERROR "STACKCHAN_APP_MAIN does not exist: ${STACKCHAN_APP_MAIN}")
+endif()
+list(APPEND STACK_CHAN_SOURCES "${STACKCHAN_APP_MAIN}")
 
 # Define source files
 set(SOURCES "audio/audio_codec.cc"
@@ -132,6 +154,30 @@ else()
     )
 endif()
 list(APPEND SOURCES ${BOARD_SOURCES})
+
+if(DEFINED STACKCHAN_REPO_ROOT)
+    set(STACKCHAN_DEVICE_DIR "${STACKCHAN_REPO_ROOT}/apps/device")
+    file(GLOB_RECURSE STACKCHAN_APP_SOURCES
+        "${STACKCHAN_DEVICE_DIR}/app/common/*.cpp"
+        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/device_application_esp32.cpp"
+        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/esp_mqtt_event_source.cpp"
+        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/stackchan_korean_font.cpp"
+        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/stackchan_korean_font_lvgl.c"
+        "${STACKCHAN_DEVICE_DIR}/adapter/*/src/*.cpp"
+        "${STACKCHAN_DEVICE_DIR}/adapter/*/src/platform/esp32/*.cpp"
+        "${STACKCHAN_DEVICE_DIR}/assembly/esp32/src/*.cpp"
+        "${STACKCHAN_DEVICE_DIR}/service/src/*.cpp"
+        "${STACKCHAN_DEVICE_DIR}/service/workflow/src/*.cpp"
+        "${STACKCHAN_DEVICE_DIR}/utils/src/logger_esp32.cpp"
+        "${STACKCHAN_REPO_ROOT}/thirdparty/fmt/src/format.cc"
+        "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/components/stackchan_hw/src/*.cpp"
+        "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/components/stackchan_hw/src/vendor/*.cpp")
+    list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "/platform/(x86|macos)/")
+    list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "_x86[.]cpp")
+    list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "/x86/")
+    list(APPEND SOURCES ${STACKCHAN_APP_SOURCES})
+    list(APPEND INCLUDE_DIRS "${nlohmann_json_SOURCE_DIR}/single_include" "${STACKCHAN_REPO_ROOT}/apps/device" "${STACKCHAN_REPO_ROOT}/apps/device/app/common" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/main" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/gateway_chat/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/gateway_chat/src" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/robot_face/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/robot_motion/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/audio_output/include" "${STACKCHAN_REPO_ROOT}/apps/device/assembly/esp32/include" "${STACKCHAN_REPO_ROOT}/apps/device/service/include" "${STACKCHAN_REPO_ROOT}/apps/device/service/workflow/include" "${STACKCHAN_REPO_ROOT}/apps/device/port/in" "${STACKCHAN_REPO_ROOT}/apps/device/port/out" "${STACKCHAN_REPO_ROOT}/apps/device/utils/include" "${STACKCHAN_REPO_ROOT}/thirdparty/fmt/include" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/components/stackchan_hw/include")
+endif()
 
 # Select audio processor according to Kconfig
 if(CONFIG_USE_AUDIO_PROCESSOR)
@@ -289,8 +335,12 @@ if(CONFIG_IDF_TARGET_ESP32S3)
     list(APPEND SOURCES "${XIAOZHI_MAIN_DIR}/boards/common/esp32_camera.cc")
 endif()
 
+if(DEFINED STACKCHAN_REPO_ROOT AND EXISTS "${STACKCHAN_REPO_ROOT}/config/esp32/stackchan.json")
+    set(STACKCHAN_CONFIG_FILE "${STACKCHAN_REPO_ROOT}/config/esp32/stackchan.json")
+endif()
+
 idf_component_register(SRCS ${SOURCES}
-                    EMBED_FILES ${LANG_SOUNDS} ${COMMON_SOUNDS}
+                    EMBED_FILES ${LANG_SOUNDS} ${COMMON_SOUNDS} ${STACKCHAN_CONFIG_FILE}
                     INCLUDE_DIRS ${INCLUDE_DIRS}
                     WHOLE_ARCHIVE
                     PRIV_REQUIRES
@@ -306,6 +356,8 @@ idf_component_register(SRCS ${SOURCES}
                         esp_driver_ppa
                         esp_app_format
                         app_update
+                        esp_https_ota
+                        espressif__esp_audio_effects
                         spi_flash
                         console
                         efuse
