@@ -159,10 +159,8 @@ if(DEFINED STACKCHAN_REPO_ROOT)
     set(STACKCHAN_DEVICE_DIR "${STACKCHAN_REPO_ROOT}/apps/device")
     file(GLOB_RECURSE STACKCHAN_APP_SOURCES
         "${STACKCHAN_DEVICE_DIR}/app/common/*.cpp"
-        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/device_application_esp32.cpp"
-        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/esp_mqtt_event_source.cpp"
-        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/stackchan_korean_font.cpp"
-        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/stackchan_korean_font_lvgl.c"
+        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/*.cpp"
+        "${STACKCHAN_DEVICE_DIR}/app/esp32/main/*.c"
         "${STACKCHAN_DEVICE_DIR}/adapter/*/src/*.cpp"
         "${STACKCHAN_DEVICE_DIR}/adapter/*/src/platform/esp32/*.cpp"
         "${STACKCHAN_DEVICE_DIR}/assembly/esp32/src/*.cpp"
@@ -175,6 +173,7 @@ if(DEFINED STACKCHAN_REPO_ROOT)
     list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "/platform/(x86|macos)/")
     list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "_x86[.]cpp")
     list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "/x86/")
+    list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "/app/esp32/main/main[.]cpp$")
     list(APPEND SOURCES ${STACKCHAN_APP_SOURCES})
     # The integrated entry point is intentionally kept small; app-specific
     # implementations live beside it in the repository and are compiled here.
