@@ -156,7 +156,7 @@ endif()
 list(APPEND SOURCES ${BOARD_SOURCES})
 
 if(DEFINED STACKCHAN_REPO_ROOT)
-    set(STACKCHAN_DEVICE_DIR "${STACKCHAN_REPO_ROOT}/apps/device")
+    set(STACKCHAN_DEVICE_DIR "${STACKCHAN_REPO_ROOT}/apps/device-runtime")
     file(GLOB_RECURSE STACKCHAN_APP_SOURCES
         "${STACKCHAN_DEVICE_DIR}/app/common/*.cpp"
         "${STACKCHAN_DEVICE_DIR}/app/esp32/main/*.cpp"
@@ -168,8 +168,8 @@ if(DEFINED STACKCHAN_REPO_ROOT)
         "${STACKCHAN_DEVICE_DIR}/service/workflow/src/*.cpp"
         "${STACKCHAN_DEVICE_DIR}/utils/src/logger_esp32.cpp"
         "${STACKCHAN_REPO_ROOT}/thirdparty/fmt/src/format.cc"
-        "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/components/stackchan_hw/src/*.cpp"
-        "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/components/stackchan_hw/src/vendor/*.cpp")
+        "${STACKCHAN_REPO_ROOT}/apps/device-runtime/app/esp32/components/stackchan_hw/src/*.cpp"
+        "${STACKCHAN_REPO_ROOT}/apps/device-runtime/app/esp32/components/stackchan_hw/src/vendor/*.cpp")
     list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "/platform/(x86|macos)/")
     list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "_x86[.]cpp")
     list(FILTER STACKCHAN_APP_SOURCES EXCLUDE REGEX "/x86/")
@@ -178,9 +178,9 @@ if(DEFINED STACKCHAN_REPO_ROOT)
     # The integrated entry point is intentionally kept small; app-specific
     # implementations live beside it in the repository and are compiled here.
     file(GLOB_RECURSE STACKCHAN_INTEGRATED_APP_SOURCES
-        "${STACKCHAN_REPO_ROOT}/apps/device/integration/stackchan_official/apps/src/*.cpp")
+        "${STACKCHAN_REPO_ROOT}/apps/device-runtime/integration/stackchan_official/apps/src/*.cpp")
     list(APPEND SOURCES ${STACKCHAN_INTEGRATED_APP_SOURCES})
-    list(APPEND INCLUDE_DIRS "${STACKCHAN_REPO_ROOT}/apps/device/integration/stackchan_official/apps/include" "${STACKCHAN_REPO_ROOT}/apps/device/integration/stackchan_official/apps/src" "${nlohmann_json_SOURCE_DIR}/single_include" "${STACKCHAN_REPO_ROOT}/apps/device" "${STACKCHAN_REPO_ROOT}/apps/device/app/common" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/main" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/gateway_chat/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/gateway_chat/src" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/robot_face/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/robot_motion/include" "${STACKCHAN_REPO_ROOT}/apps/device/adapter/audio_output/include" "${STACKCHAN_REPO_ROOT}/apps/device/assembly/esp32/include" "${STACKCHAN_REPO_ROOT}/apps/device/service/include" "${STACKCHAN_REPO_ROOT}/apps/device/service/workflow/include" "${STACKCHAN_REPO_ROOT}/apps/device/port/in" "${STACKCHAN_REPO_ROOT}/apps/device/port/out" "${STACKCHAN_REPO_ROOT}/apps/device/utils/include" "${STACKCHAN_REPO_ROOT}/thirdparty/fmt/include" "${STACKCHAN_REPO_ROOT}/apps/device/app/esp32/components/stackchan_hw/include")
+    list(APPEND INCLUDE_DIRS "${STACKCHAN_REPO_ROOT}/apps/device-runtime/integration/stackchan_official/apps/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/integration/stackchan_official/apps/src" "${nlohmann_json_SOURCE_DIR}/single_include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/app/common" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/app/esp32" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/app/esp32/main" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/integration/stackchan_official/apps/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/adapter/gateway_chat/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/adapter/gateway_chat/src" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/adapter/robot_face/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/adapter/robot_motion/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/adapter/audio_output/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/assembly/esp32/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/service/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/service/workflow/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/port/in" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/port/out" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/utils/include" "${STACKCHAN_REPO_ROOT}/thirdparty/fmt/include" "${STACKCHAN_REPO_ROOT}/apps/device-runtime/app/esp32/components/stackchan_hw/include")
 endif()
 
 # Select audio processor according to Kconfig
@@ -339,8 +339,8 @@ if(CONFIG_IDF_TARGET_ESP32S3)
     list(APPEND SOURCES "${XIAOZHI_MAIN_DIR}/boards/common/esp32_camera.cc")
 endif()
 
-if(DEFINED STACKCHAN_REPO_ROOT AND EXISTS "${STACKCHAN_REPO_ROOT}/config/esp32/stackchan.json")
-    set(STACKCHAN_CONFIG_FILE "${STACKCHAN_REPO_ROOT}/config/esp32/stackchan.json")
+if(DEFINED STACKCHAN_REPO_ROOT AND EXISTS "${STACKCHAN_REPO_ROOT}/apps/device-runtime/config/esp32/stackchan.json")
+    set(STACKCHAN_CONFIG_FILE "${STACKCHAN_REPO_ROOT}/apps/device-runtime/config/esp32/stackchan.json")
 endif()
 
 idf_component_register(SRCS ${SOURCES}
