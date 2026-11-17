@@ -125,3 +125,15 @@ dependencies:
   ## Required IDF version
   idf:
     version: '>=5.5.2'
+  m5stack/M5Unit-NFC:
+    git: https://github.com/m5stack/M5Unit-NFC.git
+    version: 471a6e02e8052264d39b3ac97005ce4de9d1cb91
+  m5stack/M5UnitUnified:
+    git: https://github.com/m5stack/M5UnitUnified.git
+    version: e4a76019f83702320101b5989cee9d1600a35b3b
+  m5stack/M5HAL:
+    git: https://github.com/m5stack/M5HAL.git
+    version: e3a84320f21bb48062f8101301020e946182a71d
+  m5stack/M5Utility:
+    git: https://github.com/m5stack/M5Utility.git
+    version: 336195d0f9466332552b337b94cab72f83c8d2ca
